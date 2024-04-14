@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <h1>Teacher Supervision Schedule Lookup</h1>
+    <input type="text" list="teacherNames" placeholder="Teacher Name" id="teacher" required/>
+    <datalist id="teacherNames">
+        <? for (var i = 0; i < teachers.length; i++) { ?>
+          <option value="<?= teachers[i] ?>"><?= teachers[i] ?></option>
+        <? } ?>
+    </datalist>
+    <button type="button" onclick="search()">Search</button>
+    <p id="scheduleTitle"></p>
+    <ul id="schedule">
+    </ul>
+    <script>
+      function search() {
+        let teacher = $("#teacher").val();
+        $("#schedule").empty();
+
+        google.script.run
+          .withSuccessHandler((schedule) => {
+            $("#scheduleTitle").text(`${teacher} has ${schedule.length} duty assignment${schedule.length != 1 ? "s" : ""} this month`)
+            schedule.forEach((duty) => {
+              $("#schedule").append(`<li>${duty}</li>`);
+            });
+          })
+          .withFailureHandler((msg) => {
+            alert(`Script failed: ${msg}`);
+          })
+          .getTeacherSchedule(teacher);
+      }
+    </script>
+  </body>
+</html>
